@@ -118,5 +118,12 @@
             <name>wall2</name>
             <pose>0 3 1 0 0 0</pose>
         </include>
+
+        <!-- 목표 지점 goal 설정-->
+        <include>
+            <uri>model://goal</uri>
+            <name>goal</name>
+            <pose>10 0 0 0 0 0</pose>
+        </include>
     </world>
 </sdf>
