@@ -3,11 +3,11 @@
         <static>true</static>
         <pose>5 0 0 0 0 0</pose><!--pose
             relative to the world-->
-        <link name='box'>
+        <link name='wall'>
             <visual name='visual'>
                 <geometry>
                     <box>
-                        <size>0.5 10.0 2.0</size>
+                        <size>1 8 2.0</size>
                     </box>
                 </geometry>
                 <!--let's
@@ -21,7 +21,7 @@
             <collision name='collision'>
                 <geometry>
                     <box>
-                        <size>0.5 10.0 2.0</size>
+                        <size>1 8 2.0</size>
                     </box>
                 </geometry>
             </collision>

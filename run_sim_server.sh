@@ -2,7 +2,7 @@
 
 # 필수 환경 변수 설정
 export GZ_IP=127.0.0.1
-export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$(pwd)/models:$(pwd)/models/my_car_world
+export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$(pwd)/models:$(pwd)/models/my_car_world:$(pwd)/models/obstacles
 
 # macOS/M2 렌더링 에러 해결 핵심 변수
 export GZ_RENDERING_ENGINE_GUESS=ogre2

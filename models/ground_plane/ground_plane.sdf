@@ -13,13 +13,13 @@
                 <geometry>
                     <plane>
                         <normal>0 0 1</normal>
-                        <size>300 300</size>
+                        <size>30 30</size>
                     </plane>
                 </geometry>
                 <material>
-                    <ambient>0.8 0.8 0.8 1</ambient>
-                    <diffuse>0.8 0.8 0.8 1</diffuse>
-                    <specular>0.8 0.8 0.8 1</specular>
+                    <ambient>0 0.5 0 1</ambient> <!-- 주변광-->
+                    <diffuse>0 0.5 0 1</diffuse> <!-- 확산광-->
+                    <specular>0 0.5 0 1</specular> <!-- 반사광-->
                 </material>
             </visual>
         </link>

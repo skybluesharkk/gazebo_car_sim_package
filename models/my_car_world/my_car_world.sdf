@@ -43,21 +43,80 @@
         </light>
 
         <include>
-            <uri>model://ground</uri>
+            <uri>model://ground_plane</uri>
             <name>ground_plane</name>
             <pose>0 0 0 0 0 0</pose>
         </include>
         <include>
             <uri>model://car</uri>
             <name>car</name>
-            <pose>0 0 0 0 0 0</pose>
+            <pose>-10 0 0 0 0 0</pose>
         </include>
 
-        <!-- 라이다 센서를 실험해보기 위해 임의로 벽을 설치함.-->
+
+        <!--car가
+        map 밖으로 나가지 못하게 벽을 설치할거임-->
+        <include>
+            <uri>model://map_wall</uri>
+            <name>north_wall</name>
+            <pose>15 0 2.5 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://map_wall</uri>
+            <name>south_wall</name>
+            <pose>-15 0 2.5 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://map_wall</uri>
+            <name>east_wall</name>
+            <pose>0 15 2.5 0 0 1.5707</pose>
+        </include>
+        <include>
+            <uri>model://map_wall</uri>
+            <name>west_wall</name>
+            <pose>0 -15 2.5 0 0 1.5707</pose>
+        </include>
+
+        <!-- 경로를 방해할 장애물들 설치.-->
+        <!--정육면체형
+        장애물 배치-->
+
+        <include>
+            <uri>model://box</uri>
+            <name>box1</name>
+            <pose>7.5 7.5 1.5 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://box</uri>
+            <name>box2</name>
+            <pose>7 -10 1.5 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://box</uri>
+            <name>box3</name>
+            <pose>-4 0 1.5 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://box</uri>
+            <name>box4</name>
+            <pose>-4 -7 1.5 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://box</uri>
+            <name>box5</name>
+            <pose>-8 8 1.5 0 0 0</pose>
+        </include>
+
+        <!-- 장애물 벽 설치-->
         <include>
             <uri>model://wall</uri>
-            <name>wall</name>
-            <pose>6 0 0 0 0 0</pose>
+            <name>wall1</name>
+            <pose>5 -3 1 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://wall</uri>
+            <name>wall2</name>
+            <pose>0 3 1 0 0 0</pose>
         </include>
     </world>
 </sdf>
