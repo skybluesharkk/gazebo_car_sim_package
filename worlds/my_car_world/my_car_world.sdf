@@ -1,30 +1,29 @@
 <?xml version="1.0"?>
-<sdf version="1.10">
+<sdf version="1.9">
     <world name="my_car_world">
         <physics name="1ms" type="ignored">
             <max_step_size>0.004</max_step_size>
             <real_time_factor>1.0</real_time_factor>
         </physics>
-        <plugin
-            filename="gz-sim-sensors-system"
-            name="gz::sim::systems::Sensors">
+       <plugin
+            filename="ignition-gazebo-sensors-system"
+            name="ignition::gazebo::v6::systems::Sensors">
         </plugin>
         <plugin
-            filename="gz-sim-physics-system"
-            name="gz::sim::systems::Physics">
+            filename="ignition-gazebo-physics-system"
+            name="ignition::gazebo::v6::systems::Physics">
         </plugin>
         <plugin
-            filename="gz-sim-user-commands-system"
-            name="gz::sim::systems::UserCommands">
+            filename="ignition-gazebo-user-commands-system"
+            name="ignition::gazebo::v6::systems::UserCommands">
         </plugin>
         <plugin
-            filename="gz-sim-scene-broadcaster-system"
-            name="gz::sim::systems::SceneBroadcaster">
+            filename="ignition-gazebo-scene-broadcaster-system"
+            name="ignition::gazebo::v6::systems::SceneBroadcaster">
         </plugin>
-        <!-- 센서를 위한 플러그인은 world 아래에 넣어야 함-->
-        <!-- IMU 센서를 위해 필요-->
-        <plugin filename="gz-sim-imu-system"
-            name="gz::sim::systems::Imu">
+        <plugin 
+            filename="ignition-gazebo-imu-system"
+            name="ignition::gazebo::v6::systems::Imu">
         </plugin>
         <!-- LIDAR 센서를 위해 필요-->
 

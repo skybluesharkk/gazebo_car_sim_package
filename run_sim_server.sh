@@ -1,24 +1,25 @@
 #!/bin/bash
 
-# 1. PATH 설정 (hanyang_jazzy 환경 우선)
-export PATH="$CONDA_PREFIX/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# 1. 환경 변수 설정
+export PATH="$CONDA_PREFIX/bin:/usr/bin:/bin"
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 
-# 2. 리소스 경로 설정
-export GZ_SIM_RESOURCE_PATH="$PWD/models:$PWD/models/obstacles:$PWD/worlds/my_car_world:$GZ_SIM_RESOURCE_PATH"
+# 2. 리소스 및 플러그인 경로 (Fortress 기준)
+export IGN_GAZEBO_RESOURCE_PATH="/home/david/Autonomous_car_gz_ros_ddpg/models:$IGN_GAZEBO_RESOURCE_PATH"
+export IGN_GAZEBO_SYSTEM_PLUGIN_PATH="$CONDA_PREFIX/lib/ign-gazebo-6/plugins"
+export IGN_RENDERING_PLUGIN_PATH="$CONDA_PREFIX/lib/ign-rendering-6/engine-plugins"
 
-# 3. [핵심] 렌더링 엔진 경로 지정
-# Harmonic(Sim 8)은 Ogre2를 기본으로 사용합니다 ㅋ
-export GZ_RENDERING_PLUGIN_PATH="$CONDA_PREFIX/lib/gz-rendering-8/engine-plugins"
-export OGRE2_CONFIG_PATH="$CONDA_PREFIX/share/gz-rendering8/ogre2"
-
-# 4. 라이브러리 경로
-export DYLD_LIBRARY_PATH="$CONDA_PREFIX/lib:$DYLD_LIBRARY_PATH"
+# 3. [핵심] NVIDIA GPU 가속 설정 (Headless)
+# 소프트웨어 렌더링(LIBGL_ALWAYS_SOFTWARE=1)은 절대 쓰지 마세요.
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export MESA_GL_VERSION_OVERRIDE=4.5
+export QT_QPA_PLATFORM=offscreen
 
 echo "------------------------------------------"
-echo "ROS 2 Jazzy + Gazebo Harmonic 서버를 시작합니다."
-echo "gz 위치: $(which gz)"
+echo "NVIDIA RTX 4060을 사용하여 가제보 서버를 시작합니다."
 echo "------------------------------------------"
 
-# 5. 서버 실행 (물리 엔진 즉시 시작 -r) ㅋ
-# 만약 또 터진다면 뒤에 --render-engine ogre 를 붙여보세요!
-gz sim -s -r "$PWD/worlds/my_car_world/my_car_world.sdf" -v 4
+# 4. xvfb-run을 사용하여 가상 디스플레이 생성 후 실행
+# -s 옵션은 서버 모드, -r은 즉시 실행입니다.
+xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24 +extension GLX" \
+ign gazebo -s -r "/home/david/Autonomous_car_gz_ros_ddpg/worlds/my_car_world/my_car_world.sdf" -v 4

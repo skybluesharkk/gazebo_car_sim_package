@@ -1,4 +1,4 @@
-<sdf version="1.10">
+<sdf version="1.9">
     <model name='wall'>
         <static>true</static>
         <pose>5 0 0 0 0 0</pose><!--pose
