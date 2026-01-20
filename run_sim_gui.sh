@@ -1,18 +1,25 @@
 #!/bin/bash
-# 1. IP 설정
-export GZ_IP=127.0.0.1
 
-# 2. PATH에서 Conda 경로를 일시적으로 완전히 제거 (가장 중요)
-# 현재 PATH에서 'miniconda'나 'anaconda'가 포함된 경로를 제외한 나머지만 다시 설정합니다.
-export PATH=$(echo $PATH | tr ":" "\n" | grep -v "miniconda" | grep -v "anaconda" | tr "\n" ":" | sed 's/:$//')
+# 1. PATH 설정
+export PATH="$CONDA_PREFIX/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
-# 3. Qt 관련 환경변수 초기화
-unset QT_QPA_PLATFORM_PLUGIN_PATH
-unset QT_PLUGIN_PATH
-unset QML2_IMPORT_PATH
-export DYLD_LIBRARY_PATH=""
+# 2. 리소스 경로 설정 
+# models 폴더와 car 부품들이 있는 폴더를 모두 포함시킵니다.
+export GZ_SIM_RESOURCE_PATH="$PWD/models:$PWD/models/obstacles:$PWD/worlds/my_car_world:$GZ_SIM_RESOURCE_PATH"
 
-echo "Conda 경로를 완전히 격리하고 가제보 GUI를 실행합니다..."
+# 3. 맥북 M2 그래픽 엔진 안정화 설정 
+export GZ_RENDERING_PLUGIN_PATH="$CONDA_PREFIX/lib/gz-rendering-8/engine-plugins"
+export OGRE2_CONFIG_PATH="$CONDA_PREFIX/share/gz-rendering8/ogre2"
+export OGRE_PLUGIN_DIR="$CONDA_PREFIX/lib/OGRE-Next"
 
-# 4. GUI 실행
-gz sim -g
+# 4. 라이브러리 경로
+export DYLD_LIBRARY_PATH="$CONDA_PREFIX/lib:$DYLD_LIBRARY_PATH"
+
+echo "------------------------------------------"
+echo "Gazebo Harmonic GUI를 시작합니다."
+echo "대상 월드: $PWD/worlds/my_car_world/my_car_world.sdf"
+echo "------------------------------------------"
+
+# 5. GUI 모드(-g)로 서버에 접속
+# 서버가 이미 실행 중이므로, 같은 월드 파일을 지정하면 해당 세션에 붙습니다 
+gz sim -g "$PWD/worlds/my_car_world/my_car_world.sdf"
