@@ -122,7 +122,7 @@
                 </limit>
             </axis>
         </joint>
-
+        <!--공식적으로 제공되는 플러그인을 찾아서 구현하였음-->
         <plugin
             filename="ignition-gazebo-ackermann-steering-system"
             name="ignition::gazebo::v6::systems::AckermannSteering">
@@ -140,7 +140,11 @@
             <child_frame_id>chassis::chassis_link</child_frame_id>
             <odom_publish_frequency>30</odom_publish_frequency>
         </plugin>
-
+        <!--충돌 방지를 위해서 contact sensor를 추가하였음.-->
+        <plugin filename="libignition-gazebo-contact-system.so"
+                name="ignition::gazebo::systems::Contact">
+        </plugin>
+        <!--자동차를 키보드로 움직여보기 위한 코드. 튜토리얼 중 추가하였음.-->
         <plugin filename="ignition-gazebo-triggered-publisher-system"
             name="ignition::gazebo::v6::systems::TriggeredPublisher">
             <input type="ignition.msgs.Int32" topic="/keyboard/keypress">
