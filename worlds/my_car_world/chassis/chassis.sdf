@@ -15,9 +15,34 @@
             <!-- mac m2 환경에서 호환성 문제 지속 발생-->
             <!-- lidar_frame의 위치 (car.sdf에서 1.05 0 0.5로 정의됨)를 chassis_link 기준으로 직접 설정 -->
 
+            <!-- 라이다 센서와 차체 사이의 빈공간을 메꾸기 위한 링크 추가-->
+            <visual name='lidar_empty_space_visual'>
+                <pose>0 0 0.3 0 0 0</pose> <!--빈 공간의 좌표-->
+                <geometry>
+                    <cylinder> <!--같은 원통 모양으로 하되, 센서보다 반지름 조금 작게-->
+                        <radius>0.03</radius> 
+                        <length>0.1</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <ambient>0.2 0.2 0.2 1</ambient> 
+                    <diffuse>0.2 0.2 0.2 1</diffuse>
+                </material>
+            </visual>
+
+            <collision name='lidar_empty_space_collision'>
+                <pose>0 0 0.3 0 0 0</pose> <!--빈 공간의 좌표, 위와 동일-->
+                <geometry>
+                    <cylinder>
+                        <radius>0.03</radius>
+                        <length>0.1</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+
             <!-- 라이다 센서 위치를 시각적으로 표시하기 위한 visual 추가 -->
             <visual name='lidar_visual'>
-                <pose>1.05 0 0.4 0 0 0</pose>
+                <pose>0 0 0.4 0 0 0</pose>
                 <geometry>
                     <cylinder>
                         <radius>0.05</radius>
@@ -30,20 +55,24 @@
                     <specular>1.0 0.0 0.0 1</specular>
                 </material>
             </visual>
-
+            <!--현실 세계를 생각하면 라이다 센서를 360도 돌릴려면 안에 있는 모터가 360도 돌아가면서 센서를 쏘는거라서 각 방향별로 시간차가 발생한다고함.-->
+            <!--단순히 라이다 센서 태그 하나 넣고 각도를 360도 돌아라고 하면 현실 세계랑 조금 안맞는 것 같은 느낌이 있어서 상하좌우 각 방면에 카메라를 하나씩 두는 것도 고민을 했었는데 -->
+            <!--일단은 완벽한 현실 재현보다는 시뮬레이션 환경에서 잘 돌아가는 강화학습 에이전트를 만드는게 우선이라고 생각해서 이렇게 진행했음.-->
+            <!--update_rate를 5로 지정해둬서 0.2초에 한번씩 시뮬레이션 세상에서 멈추고 뽑아주는 거라는데 일단은 넘어감-->
             <sensor name='gpu_lidar' type='gpu_lidar'>
-                <pose>1.05 0 0.4 0 0 0</pose>
+                <pose>0 0 0.4 0 0 0</pose>
                 <topic>lidar</topic>
                 <update_rate>5</update_rate>
                 <ignition:frame_id>lidar_frame</ignition:frame_id> <!--ROS에서 쓰기 편하게 짧은 이름으로 해주는 것이라고 함-->
                 <ray>
                     <scan>
                         <horizontal>
-                            <samples>180</samples>
+                            <samples>360</samples>
                             <resolution>1</resolution>
-                            <min_angle>-1.396263</min_angle>
-                            <max_angle>1.396263</max_angle>
+                            <min_angle>-3.141592</min_angle>
+                            <max_angle>3.141592</max_angle>
                         </horizontal>
+                        <!-- 수직 방향으로도 스캔이 가능하지만 이번 과제에서는 거리를 측정해서 센서값 기반으로 장애물을 회피하는거지, 드론처럼 z축 이동하는 것이 아니기 때문에 최소화로 작성하고 사용은 안 할 것임.-->
                         <vertical>
                             <samples>1</samples>
                             <resolution>0.01</resolution>
@@ -61,6 +90,7 @@
                 <visualize>true</visualize>
             </sensor>
             <!--SSH 터널링으로 넘어오기에 데이터가 크다는 오류가 계속 나와서 320*240을 160*120으로 줄이고 주기도 30->10으로 낮춤-->
+            <!--카메라의 x좌표는 처음에 복잡하게 생각하기 싫어서 차체의 끝 좌표에 설치했는데 돌출형인게 카메라가 정면을 주시할 때 더 나은거 같아서 그대로 둠.-->
             <sensor name="camera" type="camera">
                 <pose>1 0 0.3 0 0 0</pose>
                 <camera>

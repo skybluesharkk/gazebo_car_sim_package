@@ -11,6 +11,10 @@ ros2 run ros_gz_bridge parameter_bridge \
   /camera_info@sensor_msgs/msg/CameraInfo[ignition.msgs.CameraInfo \
   /lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan \
   /lidar/points@sensor_msgs/msg/PointCloud2[ignition.msgs.PointCloudPacked \
+  /imu@sensor_msgs/msg/Imu[ignition.msgs.IMU \
+  /model/car/odometry@nav_msgs/msg/Odometry[ignition.msgs.Odometry \
+  /model/car/pose@geometry_msgs/msg/PoseStamped[ignition.msgs.Pose \
+  /collision@ros_gz_interfaces/msg/Contacts[ignition.msgs.Contacts \
   --ros-args -r /model/car/tf:=/tf \
   -r /world/my_car_world/clock:=/clock &
 

@@ -2,21 +2,22 @@
     <model name='tire_model'>
         <link name='tire_link'>
             <pose> 0 0 0 0 0 0</pose>
-            <inertial>
-                <mass>1</mass>
-                <inertia>
-                    <ixx>0.043333</ixx>
-                    <ixy>0</ixy>
-                    <ixz>0</ixz>
-                    <iyy>0.043333</iyy>
-                    <iyz>0</iyz>
-                    <izz>0.08</izz>
-                </inertia>
+            <inertial><!--튜토리얼에서 그대로 가져올떄는 반지름 0.4 기준 관성이었기 때문에 수정함-->
+                    <mass>1</mass>
+                    <inertia>
+                        <ixx>0.025833</ixx> 
+                        <ixy>0</ixy>
+                        <ixz>0</ixz>
+                        <iyy>0.025833</iyy>
+                        <iyz>0</iyz>
+                        <izz>0.045</izz>
+                    </inertia>
             </inertial>
+
             <visual name='visual'>
                 <geometry>
-                    <cylinder>
-                        <radius>0.4</radius>
+                    <cylinder> <!--라이다 센서에 걸려서 반지름 줄임. car.sdf파일에서 축도 변경해서 내릴 생각-->
+                        <radius>0.3</radius>
                         <length>0.2</length>
                     </cylinder>
                 </geometry>
@@ -29,7 +30,7 @@
             <collision name='tire_collision'>
                 <geometry>
                     <cylinder>
-                        <radius>0.4</radius>
+                        <radius>0.3</radius>
                         <length>0.2</length>
                     </cylinder>
                 </geometry>
