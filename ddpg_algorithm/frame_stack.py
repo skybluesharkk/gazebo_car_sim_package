@@ -22,10 +22,7 @@ class FrameStack:
         return self._get_state()
 
     def _get_state(self):
-        # image: (k, H, W, 3) -> (H, W, 3 * k) or (k, H, W, 3)
-        # Agent expects (Batch, 12, 64, 64). 
-        # Here we return (k, 64, 64, 3) for image.
-        # Sensors: (k, sensor_dim)
+
         return {
             'image': np.stack(self.frames_img, axis=0),
             'sensors': np.stack(self.frames_sensor, axis=0)

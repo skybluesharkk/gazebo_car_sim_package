@@ -110,11 +110,12 @@
             <name>box2</name>
             <pose>7 -10 1.5 0 0 0</pose>
         </include>
-        <include>
+        
+        <!--<include>
             <uri>model://box</uri>
             <name>box3</name>
             <pose>-4 0 1.5 0 0 0</pose>
-        </include>
+        </include>-->
         <include>
             <uri>model://box</uri>
             <name>box4</name>

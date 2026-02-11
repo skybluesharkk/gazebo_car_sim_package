@@ -17,9 +17,14 @@
                     </plane>
                 </geometry>
                 <material>
-                    <ambient>0 0.5 0 1</ambient> <!-- 주변광-->
-                    <diffuse>0 0.5 0 1</diffuse> <!-- 확산광-->
-                    <specular>0 0.5 0 1</specular> <!-- 반사광-->
+                    <ambient>0.5 0.5 0.5 1</ambient>
+                    <diffuse>0.5 0.5 0.5 1</diffuse>
+                    <specular>0.2 0.2 0.2 1</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>/home/david/ros2_car_ws/src/gazebo_car_sim_package/models/textures/ground_texture.png</albedo_map>
+                        </metal>
+                    </pbr>
                 </material>
             </visual>
         </link>

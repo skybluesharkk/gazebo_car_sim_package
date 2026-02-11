@@ -2,7 +2,7 @@ import numpy as np
 # ou noise를 통해 탐험의 역할을 수행할 수 있도록 함.
 # 들어가는 값들은 모두 논문에 있는 값들을 그대로 사용, 시간 단위는 1로 사용.
 class OuNoise():
-    def __init__(self,action_size=2,mu=0.0,theta=0.15,sigma=0.2,dt=1): # 평균은 0.0으로 설정
+    def __init__(self,action_size=2,mu=0.0,theta=0.15,sigma=0.05,dt=1): # 평균은 0.0으로 설정
         self.action_size = action_size
         self.mu = mu
         self.theta = theta

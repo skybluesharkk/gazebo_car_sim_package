@@ -55,7 +55,7 @@
                     <collision>tire_collision</collision>
                 </contact>
                 <always_on>1</always_on>
-                <update_rate>30</update_rate>
+                <update_rate>10</update_rate>
                 <topic>contact_tire</topic>
             </sensor>
         </link>

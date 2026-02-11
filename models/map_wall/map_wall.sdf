@@ -1,38 +1,30 @@
 <sdf version="1.9">
     <model name='map_wall'>
         <static>true</static>
-        <pose>0 0 0 0 0 0</pose><!--pose
-            relative to the world-->
+        <pose>0 0 0 0 0 0</pose>
         <link name='map_wall'>
             <visual name='visual'>
                 <geometry>
-                    <box>
-                        <size>2 28 5</size>
-                    </box>
+                    <box><size>2 28 5</size></box>
                 </geometry>
-                <!--let's
-                    add color to our link-->
                 <material>
-                    <ambient>0.4 0.4 0.4 1</ambient>
-                    <diffuse>0.4 0.4 0.4 1</diffuse>
-                    <specular>0.4 0.4 0.4 1</specular>
+                    <diffuse>1.0 1.0 1.0 1.0</diffuse>
+                    <specular>0.2 0.2 0.2 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>/home/david/ros2_car_ws/src/gazebo_car_sim_package/models/textures/map_wall_texture.png</albedo_map>
+                        </metal>
+                    </pbr>
                 </material>
             </visual>
             <collision name='collision'>
                 <geometry>
-                    <box>
-                        <size>2 28 5</size>
-                    </box>
+                    <box><size>2 28 5</size></box>
                 </geometry>
                 <surface>
-                    <contact>
-                        <collide_bitmask>0x01</collide_bitmask>
-                    </contact>
+                    <contact><collide_bitmask>0x01</collide_bitmask></contact>
                     <friction>
-                        <ode>
-                            <mu>1.0</mu>
-                            <mu2>1.0</mu2>
-                        </ode>
+                        <ode><mu>1.0</mu><mu2>1.0</mu2></ode>
                     </friction>
                 </surface>
             </collision>

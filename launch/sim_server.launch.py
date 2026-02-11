@@ -1,7 +1,8 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, SetEnvironmentVariable, TimerAction
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, SetEnvironmentVariable, TimerAction
+from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
@@ -9,13 +10,32 @@ def generate_launch_description():
     # 패키지 소스 경로
     pkg_src_path = '/home/david/ros2_car_ws/src/gazebo_car_sim_package'
     
+    # 0. Launch Argument 선언 (seed)
+    seed_arg = DeclareLaunchArgument(
+        'seed',
+        default_value='0',
+        description='Random seed for training'
+    )
+    seed = LaunchConfiguration('seed')
+    
     # 1. 환경 변수 설정
+    # 1. 환경 변수 설정
+    conda_base = '/home/david/miniconda3/envs/ros_humble'
+    
     env_vars = [
         SetEnvironmentVariable(name='IGN_PARTITION', value='david_sim'),
         SetEnvironmentVariable(name='IGN_IP', value='127.0.0.1'),
         SetEnvironmentVariable(name='PKG_PATH', value=pkg_src_path),
+        # [수정] 콘다 가상 환경 내부의 실제 미디어/리소스 경로 추가
         SetEnvironmentVariable(name='IGN_GAZEBO_RESOURCE_PATH', 
-            value=f"{pkg_src_path}/models:{pkg_src_path}/models/obstacles:{pkg_src_path}/worlds/my_car_world:" + os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')),
+            value=f"{pkg_src_path}/models:"
+                  f"{pkg_src_path}/models/obstacles:"
+                  f"{pkg_src_path}/worlds/my_car_world:"
+                  f"{conda_base}/share/ignition/ignition-gazebo6:" # 가제보 모델/월드 리소스
+                  f"{conda_base}/share/ignition/ignition-rendering6/media:" # 👈 핵심: 텍스처/스크립트 경로
+                  f"{os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')}"),
+        
+        SetEnvironmentVariable(name='IGN_GAZEBO_RENDER_ENGINE_GUI', value='ogre2'),
         SetEnvironmentVariable(name='__GLX_VENDOR_LIBRARY_NAME', value='nvidia'),
         SetEnvironmentVariable(name='MESA_GL_VERSION_OVERRIDE', value='4.5'),
         SetEnvironmentVariable(name='PYTHONUNBUFFERED', value='1'),
@@ -86,22 +106,32 @@ def generate_launch_description():
         output='screen'
     )
 
-    # 4. TF 정적 변환
     tf_lidar = Node(
-        package='tf2_ros', executable='static_transform_publisher',
-        arguments=['0', '0', '0.4', '0', '0', '0', 'car/chassis/chassis_link', 'lidar_frame'],
-        parameters=[{'use_sim_time': True}],
-        output='screen'
+    package='tf2_ros', executable='static_transform_publisher',
+    arguments=['0', '0', '0.4', '0', '0', '0', 
+               'car/chassis/chassis_link', 
+               'car/chassis/chassis_link/gpu_lidar'],  
+    parameters=[{'use_sim_time': True}],
+    output='screen'
     )
 
     tf_camera = Node(
         package='tf2_ros', executable='static_transform_publisher',
-        arguments=['1.0', '0', '0.3', '-1.5708', '0', '-1.5708', 'car/chassis/chassis_link', 'camera_link'],
+        arguments=['1.0', '0', '0.3', '-1.5708', '0', '-1.5708', 
+                'car/chassis/chassis_link', 
+                'car/chassis/chassis_link/camera'], 
         parameters=[{'use_sim_time': True}],
         output='screen'
     )
 
-    # 5. DDPG 노드 실행
+    # 5. Odom to TF Publisher (Foxglove 시각화용)
+    odom_tf_publisher = ExecuteProcess(
+        cmd=['python3', os.path.join(pkg_src_path, 'ddpg_algorithm', 'odom_to_tf_publisher.py'), '--ros-args', '-p', 'use_sim_time:=true'],
+        output='screen',
+        cwd=os.path.join(pkg_src_path, 'ddpg_algorithm')
+    )
+
+    # 6. DDPG 노드 실행
     script_path = os.path.join(pkg_src_path, 'ddpg_algorithm')
 
     service_node = ExecuteProcess(
@@ -110,17 +140,20 @@ def generate_launch_description():
         cwd=script_path
     )
 
+    # train.py에 --seed 인자 전달
     training_node = ExecuteProcess(
-        cmd=['python3', os.path.join(script_path, 'train.py'), '--ros-args', '-p', 'use_sim_time:=true'],
+        cmd=['python3', os.path.join(script_path, 'train.py'), '--seed', seed, '--ros-args', '-p', 'use_sim_time:=true'],
         output='screen',
         cwd=script_path
     )
 
     return LaunchDescription(env_vars + [
+        seed_arg,  # Argument 등록
         gz_sim,
         bridge_node,
         tf_lidar,
         tf_camera,
+        TimerAction(period=3.0, actions=[odom_tf_publisher]),
         TimerAction(period=5.0, actions=[service_node]),
         TimerAction(period=7.0, actions=[training_node]),
     ])

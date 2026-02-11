@@ -9,12 +9,13 @@ ddpg_:
     max_step: 1000
     max_episode: 1000
     max_buffer_size: 100000 # 논문에서는 10^6으로 진행하였다고 함, ram 문제로 줄여서 진행함.
-    actor_lr : 5e-5
-    critic_lr : 1e-4
-    critic_l2_decay : 1e-2
+    actor_lr: 1e-5      # 논문 1e-4보다 10배 낮게
+    critic_lr: 2e-5     # 논문 1e-3보다 10배 낮게 -> 5e-5 -> 2e-5 (안정성 강화)
+    critic_l2_decay: 1e-4 
     gamma : 0.99
     tau : 0.001
     theta : 0.15
     sigma : 0.2
     mu : 0.0
-    batch_size : 64
+    batch_size : 128    # 64 -> 128 (논문 따랐으나, 그래디언트 안정성 위해 올림)
+    warmup_steps : 2000 

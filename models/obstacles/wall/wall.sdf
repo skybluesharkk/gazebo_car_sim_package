@@ -6,16 +6,16 @@
         <link name='wall'>
             <visual name='visual'>
                 <geometry>
-                    <box>
-                        <size>1 8 2.0</size>
-                    </box>
+                    <box><size>1 8 2.0</size></box>
                 </geometry>
-                <!--let's
-                    add color to our link-->
                 <material>
-                    <ambient>0.0 0.0 1.0 1</ambient>
-                    <diffuse>0.0 0.0 1.0 1</diffuse>
-                    <specular>0.0 0.0 1.0 1</specular>
+                    <diffuse>1.0 1.0 1.0 1.0</diffuse>
+                    <specular>0.2 0.2 0.2 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>/home/david/ros2_car_ws/src/gazebo_car_sim_package/models/textures/wall_texture.png</albedo_map>
+                        </metal>
+                    </pbr>
                 </material>
             </visual>
             <collision name='collision'>

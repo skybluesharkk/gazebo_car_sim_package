@@ -34,6 +34,7 @@ setup(
     name=package_name,
     version='0.0.0',
     packages=[ddpg_submodule],
+    package_dir={'': '.'},
     data_files=data_files,
     install_requires=['setuptools'],
     zip_safe=True,

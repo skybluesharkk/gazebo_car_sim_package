@@ -10,6 +10,8 @@ from env_node import EnvNode
 from ddpg_agent import DDPGAgent
 from frame_stack import FrameStack
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def main():
     parser = argparse.ArgumentParser(description='Test Driver and Video Recorder')
     parser.add_argument('--model', type=str, required=True, help='Path to the model checkpoint (.pth)')
@@ -17,31 +19,24 @@ def main():
     parser.add_argument('--max_steps', type=int, default=1000, help='Maximum steps to record')
     args = parser.parse_args()
 
-    # ROS2 Init
     rclpy.init()
     
-    # Environment & Agent
     env = EnvNode()
     agent = DDPGAgent()
     frame_stack = FrameStack(4)
     
-    # Load Model
+    # 모델 로드
     print(f"Loading model from: {args.model}")
     if os.path.exists(args.model):
-        checkpoint = torch.load(args.model)
+        checkpoint = torch.load(args.model, map_location=device)
         agent.Actor.load_state_dict(checkpoint['Actor'])
-        agent.Actor.eval() # Set to evaluation mode
+        agent.Actor.eval()
         print("Model loaded successfully!")
     else:
         print(f"Error: Model file {args.model} not found.")
         return
 
-    # Video Writer Setup
-    # EnvNode resizes to 64x64 for training, but let's check what we get.
-    # We might want to capture the raw topic if possible, but EnvNode currently processes it.
-    # EnvNode.latest_image is flattened/normalized float. We need to convert back to 0-255 uint8.
-    
-    # Wait for first observation to get dimensions
+    # 비디오 설정
     print("Waiting for sensors...")
     env.reset()
     obs = env.get_observation()
@@ -49,15 +44,13 @@ def main():
         rclpy.spin_once(env)
         obs = env.get_observation()
     
-    # Image is (64, 64, 3) float 0-1
     height, width, channels = 64, 64, 3
-    # Upscale for better viewing? 64x64 is tiny. Let's resize x4 -> 256x256
     scale = 4
     video_w = width * scale
     video_h = height * scale
     
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v') # or 'XVID'
-    out = cv2.VideoWriter(args.output, fourcc, 10.0, (video_w, video_h)) # 10fps estimated
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(args.output, fourcc, 10.0, (video_w, video_h))
     
     print(f"Recording started: {args.output}")
     
@@ -68,37 +61,25 @@ def main():
     
     try:
         while steps < args.max_steps:
-            # Get Action (No Noise)
-            # DDPGAgent.get_action adds noise by default unless we modify it or manually call Actor.
-            # Let's manually call Actor for pure inference.
-            
-            # Prepare state
-            state_img = torch.FloatTensor(state['image']).permute(0, 3, 1, 2).reshape(1, 12, 64, 64).to(agent.Actor.device)
-            state_val = torch.FloatTensor(state['sensors']).flatten().unsqueeze(0).to(agent.Actor.device)
+            # 전처리 (train/get_action과 동일)
+            state_img = torch.FloatTensor(state['image']).permute(0, 3, 1, 2).reshape(1, 12, 64, 64).to(device)
+            state_val = torch.FloatTensor(state['sensors']).flatten().unsqueeze(0).to(device) * 2.0 - 1.0  # [0,1] → [-1,1]
             
             with torch.no_grad():
                 action_tensor = agent.Actor(state_img, state_val)
                 action = action_tensor.cpu().numpy()[0]
                 
-            # Execute
             next_obs_raw, reward, done = env.step(action)
             total_reward += reward
             
-            # Record Frame
+            # 프레임 기록
             if next_obs_raw['image'] is not None:
-                # Convert float 0-1 to uint8 0-255
-                frame = (next_obs_raw['image'] * 255).astype(np.uint8)
-                # RGB to BGR for OpenCV
+                # 이미지 범위: [-1, 1] → [0, 255]
+                frame = ((next_obs_raw['image'] * 0.5 + 0.5) * 255).clip(0, 255).astype(np.uint8)
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-                # Upscale
                 frame_large = cv2.resize(frame, (video_w, video_h), interpolation=cv2.INTER_NEAREST)
                 out.write(frame_large)
-                
-                # Live Preview (Optional, helpful for debugging headless)
-                # cv2.imshow('Driving', frame_large)
-                # cv2.waitKey(1)
             
-            # Stack state
             next_state = frame_stack.step(next_obs_raw)
             state = next_state
             
